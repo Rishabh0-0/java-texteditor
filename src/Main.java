@@ -48,7 +48,7 @@ public class Main {
             switch (command) {
                 case "append", "a":
                     content = String.join(" ", Arrays.copyOfRange(tokens, 1, tokens.length));
-                    page.get(cursor[0]).append(content);
+                    page.get(cursor[0]).insert(cursor[1], content);
                     cursor[1] += content.length();
                     desiredColumn = cursor[1];
                     break;
