@@ -9,6 +9,7 @@ public class Main {
         List<StringBuilder> page = new ArrayList<>();
         page.add(new StringBuilder());
         int[] cursor = {0, 0};
+        int desiredColumn = cursor[1];
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -49,6 +50,7 @@ public class Main {
                     content = String.join(" ", Arrays.copyOfRange(tokens, 1, tokens.length));
                     page.get(cursor[0]).append(content);
                     cursor[1] += content.length();
+                    desiredColumn = cursor[1];
                     break;
 
                 case "insert", "i":
@@ -60,6 +62,7 @@ public class Main {
                     page.get(lineNum).append(content);
                     cursor[0] = lineNum;
                     cursor[1] = page.get(lineNum).length();
+                    desiredColumn = cursor[1];
                     break;
 
                 case "delete", "del":
@@ -67,19 +70,52 @@ public class Main {
                     page.remove(lineNum);
                     cursor[0] = cursor[0] == 0 ? 0 : cursor[0] - 1;
                     cursor[1] = page.get(cursor[0]).length();
+                    desiredColumn = cursor[1];
                     break;
 
                 case "addNewLine", "nl":
                     page.add(cursor[0] + 1, new StringBuilder());
                     cursor[0]++;
                     cursor[1] = 0;
+                    desiredColumn = cursor[1];
                     break;
 
                 case "left":
-                    cursor[1]--;
+                    int leftSteps = 1;
+                    if (tokens.length == 2){
+                        for (char c: tokens[1].toCharArray()){
+                            if (!Character.isDigit(c)){
+                                break;
+                            }
+                        }
+                        leftSteps = Integer.parseInt(tokens[1]);
+                    }
+                    cursor[1] -= leftSteps;
+                    desiredColumn = cursor[1];
                     break;
+
                 case "right":
-                    cursor[1]++;
+                    int rightSteps = 1;
+                    if (tokens.length == 2){
+                        for (char c: tokens[1].toCharArray()){
+                            if (!Character.isDigit(c)){
+                                break;
+                            }
+                        }
+                        rightSteps = Integer.parseInt(tokens[1]);
+                    }
+                    cursor[1] += rightSteps;
+                    desiredColumn = cursor[1];
+                    break;
+
+                case "up":
+                    cursor[0]--;
+                    cursor[1] = Math.min(page.get(cursor[0]).length(), desiredColumn);
+                    break;
+
+                case "down":
+                    cursor[0]++;
+                    cursor[1] = Math.min(page.get(cursor[0]).length(), desiredColumn);
                     break;
 
                 case "quit", "q":
