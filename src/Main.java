@@ -66,11 +66,35 @@ public class Main {
                     break;
 
                 case "delete", "del":
-                    lineNum = Integer.parseInt(tokens[1]);
-                    page.remove(lineNum);
-                    cursor[0] = cursor[0] == 0 ? 0 : cursor[0] - 1;
-                    cursor[1] = page.get(cursor[0]).length();
-                    desiredColumn = cursor[1];
+                    int deleteIndex = cursor[0];
+                    if (tokens.length > 1){
+                        for (char c: tokens[1].toCharArray()){
+                            if (!Character.isDigit(c)){
+                                break;
+                            }
+                        }
+                        deleteIndex = Integer.parseInt(tokens[1]);
+                    }
+
+                    if (deleteIndex < 0 || deleteIndex >= page.size()){
+                        System.out.println("Invalid index");
+                        break;
+                    }
+
+                    if (page.size() == 1){
+                        page.get(0).delete(0, page.get(0).length());
+                        cursor[1] = 0;
+                        desiredColumn = 0;
+                    } else {
+                        page.remove(deleteIndex);
+                        if (deleteIndex == cursor[0]){
+                            cursor[0] = Math.max(0, cursor[0] - 1);
+                            cursor[1] = Math.min(page.get(cursor[0]).length(), desiredColumn);
+                        } else if (deleteIndex < cursor[0]){
+                            cursor[0]--;
+                            cursor[1] = Math.min(page.get(cursor[0]).length(), desiredColumn);
+                        }
+                    }
                     break;
 
                 case "addNewLine", "nl":
@@ -82,7 +106,7 @@ public class Main {
 
                 case "left":
                     int leftSteps = 1;
-                    if (tokens.length == 2){
+                    if (tokens.length > 1){
                         for (char c: tokens[1].toCharArray()){
                             if (!Character.isDigit(c)){
                                 break;
@@ -90,13 +114,13 @@ public class Main {
                         }
                         leftSteps = Integer.parseInt(tokens[1]);
                     }
-                    cursor[1] -= leftSteps;
+                    cursor[1] = Math.max(0, cursor[1] - leftSteps);
                     desiredColumn = cursor[1];
                     break;
 
                 case "right":
                     int rightSteps = 1;
-                    if (tokens.length == 2){
+                    if (tokens.length > 1){
                         for (char c: tokens[1].toCharArray()){
                             if (!Character.isDigit(c)){
                                 break;
@@ -104,17 +128,35 @@ public class Main {
                         }
                         rightSteps = Integer.parseInt(tokens[1]);
                     }
-                    cursor[1] += rightSteps;
+                    cursor[1] = Math.min(page.get(cursor[0]).length(), cursor[1] + rightSteps);
                     desiredColumn = cursor[1];
                     break;
 
                 case "up":
-                    cursor[0]--;
+                    int upSteps = 1;
+                    if (tokens.length > 1){
+                        for (char c: tokens[1].toCharArray()){
+                            if (!Character.isDigit(c)){
+                                break;
+                            }
+                        }
+                        upSteps = Integer.parseInt(tokens[1]);
+                    }
+                    cursor[0] = Math.max(0, cursor[0] - upSteps);
                     cursor[1] = Math.min(page.get(cursor[0]).length(), desiredColumn);
                     break;
 
                 case "down":
-                    cursor[0]++;
+                    int downSteps = 1;
+                    if (tokens.length > 1){
+                        for (char c: tokens[1].toCharArray()){
+                            if (!Character.isDigit(c)){
+                                break;
+                            }
+                        }
+                        downSteps = Integer.parseInt(tokens[1]);
+                    }
+                    cursor[0] = Math.min(page.size() - 1, cursor[0] + downSteps);
                     cursor[1] = Math.min(page.get(cursor[0]).length(), desiredColumn);
                     break;
 
@@ -122,9 +164,10 @@ public class Main {
                     return;
 
                 default:
-                    System.out.println("invlaid command! " + command);
+                    System.out.println("invalid command! " + command);
                     break;
             }
+            System.out.println(desiredColumn);
             fixCursor(page, cursor);
         }
     }
