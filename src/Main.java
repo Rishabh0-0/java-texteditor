@@ -12,7 +12,7 @@ public class Main {
         while (true) {
             Renderer.display(doc);
 
-            System.out.println("\n\n>");
+            System.out.print("\n\n> ");
             String[] tokens = br.readLine().split(" ");
             String cmd = tokens[0];
 

@@ -64,6 +64,11 @@ public class CommandRegistry {
             doc.deleteLine(lineNum);
         });
         commands.put("del", commands.get("delete"));
+
+        commands.put("save", (Document doc, String[] args) -> {
+            String name = args.length == 2 ? args[1] : "";
+            doc.saveFile(name);
+        });
     }
 
     public boolean executeCommand(String name, Document doc, String[] args){

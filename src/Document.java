@@ -1,7 +1,11 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Document {
+    private String currentFileName = "untitled";
     private final List<StringBuilder> lines = new ArrayList<>();
     private final int[] cursor = {0, 0};
     private int desiredColumn = 0;
@@ -41,6 +45,27 @@ public class Document {
         lines.remove(index);
         cursor[0] = Math.max(0, cursor[0] - 1);
         cursor[1] = Math.min(lines.get(cursor[0]).length(), desiredColumn);
+    }
+
+    // File Handling
+    public void saveFile(String name){
+        name = name.trim();
+        String fileName = !name.isEmpty() ? name : currentFileName;
+        try {
+            File file = new File(fileName + ".txt");
+            FileWriter writer = new FileWriter(file.getName());
+
+            for (StringBuilder line: lines){
+                writer.write(line.toString() + "\n");
+            }
+            System.out.println("File saved..");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Unable to save file!");
+            e.printStackTrace();
+        }
+
+
     }
 
     // Navigation
