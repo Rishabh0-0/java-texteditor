@@ -69,6 +69,11 @@ public class CommandRegistry {
             String name = args.length == 2 ? args[1] : "";
             doc.saveFile(name);
         });
+
+        commands.put("open", (doc, args) -> {
+           if (args.length < 2) return;
+           doc.openFile(args[1]);
+        });
     }
 
     public boolean executeCommand(String name, Document doc, String[] args){

@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,21 +49,40 @@ public class Document {
     public void saveFile(String name){
         name = name.trim();
         String fileName = !name.isEmpty() ? name : currentFileName;
-        try {
-            File file = new File(fileName + ".txt");
-            FileWriter writer = new FileWriter(file.getName());
 
+        if (!fileName.endsWith(".txt")) fileName += ".txt";
+
+        try (FileWriter writer = new FileWriter(fileName)) {
             for (StringBuilder line: lines){
                 writer.write(line.toString() + "\n");
             }
-            System.out.println("File saved..");
-            writer.close();
+            System.out.println("File saved as " + fileName);
+
         } catch (IOException e) {
             System.out.println("Unable to save file!");
-            e.printStackTrace();
         }
+    }
 
+    public void openFile(String name) {
+        name = name.trim();
+        if (name.isEmpty()) return;
+        if (!name.endsWith(".txt")) name += ".txt";
 
+        lines.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(name))) {
+            String line;
+            while ((line = reader.readLine()) != null){
+                lines.add(new StringBuilder(line));
+            }
+            currentFileName = name.replace(".txt", "");
+            cursor[0]= 0;
+            cursor[1] = 0;
+            desiredColumn = 0;
+
+            System.out.println("File opened: " + name);
+        } catch (IOException e){
+            System.out.println("Error: Could not open file '" + name + "'");
+        }
     }
 
     // Navigation
