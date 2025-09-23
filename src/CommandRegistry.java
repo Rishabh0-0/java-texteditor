@@ -74,6 +74,38 @@ public class CommandRegistry {
            if (args.length < 2) return;
            doc.openFile(args[1]);
         });
+
+        commands.put("cut", (doc, args) -> {
+            if (args.length < 3) {
+                System.out.println("Usage: cut <startIndex> <endIndex>");
+                return;
+            }
+            if (!isNumeric(args[1]) || !isNumeric(args[2])){
+                System.out.println("Invalid input");
+                return;
+            }
+            int start = Integer.parseInt(args[1]), end = Integer.parseInt(args[2]);
+            doc.cut(start, end);
+            System.out.println("Text copied into clipboard!");
+        });
+
+        commands.put("copy", (doc, args) -> {
+            if (args.length < 3) {
+                System.out.println("Usage: copy <startIndex> <endIndex>");
+                return;
+            }
+            if (!isNumeric(args[1]) || !isNumeric(args[2])){
+                System.out.println("Invalid input");
+                return;
+            }
+            int start = Integer.parseInt(args[1]), end = Integer.parseInt(args[2]);
+            doc.copy(start, end);
+            System.out.println("Text copied into clipboard!");
+        });
+
+        commands.put("paste", (doc, args) -> {
+            doc.paste();
+        });
     }
 
     public boolean executeCommand(String name, Document doc, String[] args){
@@ -83,5 +115,12 @@ public class CommandRegistry {
             return true;
         }
         return false;
+    }
+
+    public boolean isNumeric(String num){
+        for (char c: num.toCharArray()){
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
 }

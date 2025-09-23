@@ -7,6 +7,7 @@ public class Document {
     private final List<StringBuilder> lines = new ArrayList<>();
     private final int[] cursor = {0, 0};
     private int desiredColumn = 0;
+    private String clipboard = "";
 
     public Document () {
         lines.add(new StringBuilder());
@@ -19,6 +20,7 @@ public class Document {
     public int[] getCursor() {
         return cursor;
     }
+    public String getCurrentFileName() {return currentFileName; }
 
     public void insertText(String text) {
         lines.get(cursor[0]).insert(cursor[1], text);
@@ -104,6 +106,35 @@ public class Document {
     public void moveDown(int steps){
         cursor[0] = Math.min(lines.size() - 1, cursor[0] + steps);
         cursor[1] = Math.min(lines.get(cursor[0]).length(), desiredColumn);
+    }
+
+    // Cut, copy, paste
+    public void cut(int startIndex, int endIndex){
+        if (startIndex < 0 || endIndex >= lines.get(cursor[0]).length()){
+            System.out.println("Invalid range");
+            return;
+        }
+        clipboard = lines.get(cursor[0]).substring(startIndex, endIndex + 1);
+        lines.get(cursor[0]).delete(startIndex, endIndex + 1);
+        cursor[1] = Math.max(0, Math.min(startIndex, lines.get(cursor[0]).length()));
+        desiredColumn = cursor[1];
+    }
+
+    public void copy(int startIndex, int endIndex) {
+        if (startIndex < 0 || endIndex >= lines.get(cursor[0]).length()){
+            System.out.println("Invalid range");
+            return;
+        }
+        clipboard = lines.get(cursor[0]).substring(startIndex, endIndex + 1);
+    }
+
+    public void paste() {
+        if (clipboard.isEmpty()){
+            System.out.println("nothing to paste");
+            return;
+        }
+
+        insertText(clipboard);
     }
 
     // Cursor Safety
