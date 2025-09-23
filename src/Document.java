@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class Document {
     private String currentFileName = "untitled";
@@ -8,9 +9,11 @@ public class Document {
     private final int[] cursor = {0, 0};
     private int desiredColumn = 0;
     private String clipboard = "";
+    private Stack<Operation> undoStack;
 
     public Document () {
         lines.add(new StringBuilder());
+        undoStack = new Stack<>();
     }
 
     public List<StringBuilder> getLines() {
@@ -23,6 +26,7 @@ public class Document {
     public String getCurrentFileName() {return currentFileName; }
 
     public void insertText(String text) {
+        undoStack.push(new Operation("insert", text, cursor[0], cursor[1], cursor));
         lines.get(cursor[0]).insert(cursor[1], text);
         cursor[1] += text.length();
         desiredColumn = cursor[1];
@@ -32,6 +36,26 @@ public class Document {
         lines.add(cursor[0] + 1, new StringBuilder());
         cursor[0]++;
         cursor[1] = 0;
+        desiredColumn = cursor[1];
+    }
+
+    public void remove(int startIndex, int endIndex){
+        if (startIndex < 0 || endIndex >= lines.get(cursor[0]).length()){
+            System.out.println("Invalid range");
+            return;
+        }
+        lines.get(cursor[0]).delete(startIndex, endIndex + 1);
+        cursor[1] = Math.max(0, Math.min(startIndex, lines.get(cursor[0]).length()));
+        desiredColumn = cursor[1];
+    }
+
+    public void go(int line, int pos){
+        if (line > lines.size() - 1 || line < 0 || pos > lines.get(line).length() || pos < 0){
+            System.out.println("Invalid position");
+            return;
+        }
+        cursor[0] = line;
+        cursor[1] = pos;
         desiredColumn = cursor[1];
     }
 
@@ -135,6 +159,15 @@ public class Document {
         }
 
         insertText(clipboard);
+    }
+
+    public void undo() {
+        if (undoStack.isEmpty()) return;
+        Operation lastOp = undoStack.pop();
+        switch (lastOp.getType()){
+            case "insert":
+
+        }
     }
 
     // Cursor Safety

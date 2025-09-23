@@ -38,6 +38,19 @@ public class CommandRegistry {
             doc.insertText(text);
         });
 
+        commands.put("remove", (doc, args) -> {
+            if (args.length < 3) {
+                System.out.println("Usage: cut <startIndex> <endIndex>");
+                return;
+            }
+            if (!isNumeric(args[1]) || !isNumeric(args[2])){
+                System.out.println("Invalid input");
+                return;
+            }
+            int start = Integer.parseInt(args[1]), end = Integer.parseInt(args[2]);
+            doc.remove(start, end);
+        });
+
         commands.put("left", (doc, args) -> {
            int steps = args.length > 1 ? Integer.parseInt(args[1]) : 1;
            doc.moveLeft(steps);
@@ -56,6 +69,23 @@ public class CommandRegistry {
         commands.put("down", (doc, args) -> {
             int steps = args.length > 1 ? Integer.parseInt(args[1]) : 1;
             doc.moveDown(steps);
+        });
+
+        commands.put("goto", (doc, args) -> {
+            if (args.length < 2) {
+                System.out.println("Usage: goto <lineNumber> Optional: <position>");
+                return;
+            }
+            if (!isNumeric(args[1])){
+                System.out.println("Invalid input");
+                return;
+            }
+            int lineNum = Integer.parseInt(args[1]);
+            int pos = 0;
+            if (args.length == 3 && isNumeric(args[2])){
+                pos = Integer.parseInt(args[2]);
+            }
+            doc.go(lineNum, pos);
         });
 
         commands.put("delete", (doc, args) -> {
